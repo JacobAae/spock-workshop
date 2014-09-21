@@ -1,0 +1,138 @@
+= Spock Workshop Project
+
+This is a small project with a useless checklist, made with few tests, a static number of elements etc.
+It is to be used as a starting point for writing a few more http://docs.spockframework.org/[Spock Tests], and refactor the code into a dynamic list.
+
+== Introduction
+
+Study the existing tests, to see some examples of the Spock syntax. To run the tests, use this command
+----
+./gradlew test
+----
+
+
+== Coverage
+
+To see the testcoverage, use one of the following commands
+----
+./gradlew cobertura
+----
+
+or
+
+----
+./gradlew jacocoTestReport
+----
+
+== Quick notes - What Spock can
+
+=== Basic testing
+A spoc test is a class that extends `Specification`, and a spec can looks like this:
+
+----
+	void "Test adding minutes to an item"() {
+		given:
+		ListItem item = new ListItem('Dummy description', 0);
+
+		expect: 'Enforce preconditions'
+		item.getTotalMinutesUsed() == 0;
+		item.getNumberOfTimesHandled() == 0;
+
+		when:
+		item.addToMinuttesUsed(30);
+
+		then:
+		item.getTotalMinutesUsed() == 30
+		item.getNumberOfTimesHandled() == 1;
+	}
+----
+
+here for state based testing
+
+TIP: `given`, `expect`, `when`, `then` are just labels that guide the specification, but statements after  `then` and `expect` are power assertions, and must evaluate to true (Groovy truth)
+
+Other labels are `setup`, `cleanup`, `where` and `and`
+
+For data driven testing, the `where` label is handy:
+
+----
+	@Unroll
+	void "Test getTotalPrice, where items with minutes #minutes and price #price is #total"() {
+		given:
+		ListItem listItem = new ListItem("Dummy description", price)
+		minutes.each {
+			listItem.addToMinuttesUsed(it)
+		}
+
+		expect:
+		listItem.totalPrice == total
+
+		where:
+		minutes         | price     || total
+		[0]             | 0         || 0
+		[1,2,3]         | 0         || 0
+		[1,2,3]         | 1.75      || 10.5
+	}
+----
+
+Here 2 tests are created, based on the data in the table. The `@Unroll` annotation generates separate tests when output, and the `#` in the title are placeholder variables.
+
+=== Mocking, Stubbing and Spying
+
+Spock comes with build in mockking support.
+
+Mocking
+----
+shoppingBasket.emailService = Mock(EmailService)
+
+...
+
+1 * shoppingBasket.emailService.sendConfirmationEmail(_,_)
+----
+
+Stubbing
+----
+shoppingBasket.emailService = Mock(EmailService)
+
+...
+
+shoppingBasket.paymentService.performPayment(_,_) >> false
+----
+
+and they can be used combined:
+----
+1 * shoppingBasket.paymentService.performPayment(_,_) >> false
+----
+
+
+== Problems to do
+
+. Write a test checking the `setCompleted` method in the `ListItem` class
+. Write a test checking the output of the `toString` method in `Checklist`, and refactor to using `StringBuilder`
+. Consider the method  `completeItem` in the `Checklist` class
+.. Make smaller private methods, for refactoring the method
+.. Check your smaller methods work, by writing appropriate tests for them
+.. Refactor it using the smaller (private) methods
+.. Make a test for `completeItem` that does not report completions to the statistics server
+. Make the Checklist a dynamic structure, so it can contain more than 10-20 items
+
+
+== Credits
+
+* Peter Niederwieser - Creater of the Spock Framework
+* Rob Fletcher - For more in depth use, when you are familiar with Spock: https://www.youtube.com/watch?v=dvDoieRf4po[Idiomatic Spock - Video from GR8Conf Europe 2014]
+
+== References
+
+* http://spockframework.org[Old documentation]
+* http://docs.spockframework.org/en/latest/[New (incomplete) docs]
+* https://github.com/spockframework/spock[Spock source code]
+* http://meet.spockframework.org[http://meet.spockframework.org]
+* http://downloads.spockframework.org[Spock Example Project]
+
+=== Geb - functionally testing (with browser)
+
+* http://www.gebish.org/[Framework page]
+* http://www.gebish.org/manual/current/[Book of Geb - The manual]
+* https://www.youtube.com/watch?v=McFoNTKD8Q0[Video on GEB from GR8Conf Europe 2014]
+
