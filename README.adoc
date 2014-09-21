@@ -139,4 +139,4 @@ and they can be used combined:
 * http://www.gebish.org/[Framework page]
 * http://www.gebish.org/manual/current/[Book of Geb - The manual]
 * https://www.youtube.com/watch?v=McFoNTKD8Q0[Video on GEB from GR8Conf Europe 2014]
-
+* https://github.com/geb/geb-example-gradle.git[Example project at Github]
