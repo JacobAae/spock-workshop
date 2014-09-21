@@ -1,0 +1,104 @@
+apply plugin: 'groovy'
+apply plugin: "jacoco"
+apply plugin: 'cobertura'
+
+def langLevel = 1.7
+
+sourceCompatibility = langLevel
+targetCompatibility = langLevel
+
+version = '1.0'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.saliman:gradle-cobertura-plugin:2.2.4'
+    }
+}
+
+repositories {
+	mavenLocal()
+    mavenCentral()
+	maven { url 'http://oss.sonatype.org/content/repositories/snapshots/' }
+}
+
+dependencies {
+	testCompile 'org.spockframework:spock-core:1.0-groovy-2.0-SNAPSHOT'
+}
+
+// Can be omitted, but is here to display tests as they are run
+tasks.withType(Test) {
+	testLogging {
+		events "passed", "failed", "skipped", "standardOut", "standardError"
+		showExceptions true
+	}
+}
+
+jacoco {
+    toolVersion = "0.7.1.201405082137"
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
+}
+
+/*
+
+apply plugin: 'groovy'
+apply plugin: 'cobertura'
+
+group = 'com.example'
+version = '1.0.0-SNAPSHOT'
+description = """Sample project with Spock tests and Cobertura code coverage"""
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'net.saliman:gradle-cobertura-plugin:2.2.4'
+    }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', '2.2.1'
+
+    testCompile group: 'cglib', name: 'cglib-nodeps', version:'2.2.2'
+    testCompile group: 'junit', name: 'junit-dep', version:'4.11'
+    testCompile group: 'org.spockframework', name: 'spock-core', '0.7-groovy-2.0'
+    testCompile group: 'org.objenesis', name: 'objenesis', version:'1.2'
+}
+
+test {
+    filter {
+        includeTestsMatching "*Spec"
+    }
+}
+
+cobertura {
+    coverageFormats = ['html', 'xml']
+    coverageIgnoreTrivial = true
+    coverageIgnores = ['org.slf4j.Logger.*']
+    coverageReportDir = new File("$buildDir/reports/cobertura")
+}
+
+test.finalizedBy(project.tasks.cobertura)
+
+ */
