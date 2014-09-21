@@ -27,6 +27,7 @@ repositories {
 
 dependencies {
 	testCompile 'org.spockframework:spock-core:1.0-groovy-2.0-SNAPSHOT'
+    testRuntime "cglib:cglib-nodep:2.2.2"
 }
 
 // Can be omitted, but is here to display tests as they are run
