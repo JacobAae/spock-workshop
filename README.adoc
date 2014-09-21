@@ -17,12 +17,16 @@ To see the testcoverage, use one of the following commands
 ----
 ./gradlew cobertura
 ----
+with the generated report at  `build/reports/cobertura/index.html`
 
 or
 
 ----
 ./gradlew jacocoTestReport
 ----
+with the generated report at `build/jacocoHtml/index.html`
+
+
 
 == Quick notes - What Spock can
 
