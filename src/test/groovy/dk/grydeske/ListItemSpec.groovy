@@ -3,6 +3,8 @@ package dk.grydeske
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import javax.rmi.CORBA.Util
+
 class ListItemSpec extends Specification{
 
 	void "Test adding minutes to an item"() {
@@ -21,7 +23,19 @@ class ListItemSpec extends Specification{
 		item.getNumberOfTimesHandled() == 1;
 	}
 
-	// TODO Write a test checking the setCompleted method
+    void "Test the completeItem method"() {
+        given:
+        ListItem item = new ListItem('Dummy description', 0);
+
+        expect:
+        !item.dateCompleted
+
+        when:
+        item.completeItem()
+
+        then:
+        (item.dateCompleted.time - new Date().time ).abs() < 1000
+    }
 
 	@Unroll
 	void "Test getTotalPrice, where items with minutes #minutes and price #price is #total"() {

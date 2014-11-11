@@ -38,48 +38,54 @@ public class Checklist {
 		return findItemInList(description, unfinishedItems, unfinishedItemsCount);
 	}
 
-	/**
-	 * Removes the item from the unfinished and places it with the finished items.
-	 *
-	 * Also reports the completion to remote URL
-	 * @param item
-	 */
-	public void completeItem(ListItem item) throws ItemNotFoundException {
-		// Find location
-		int location = -1;
-		for( int i = 0; i < unfinishedItemsCount; i++) {
-			if( unfinishedItems[i] == item) {
-				location = i;
-				break;
-			}
-		}
+    private ListItem findItemInList(String description, ListItem[] items, int count) {
+        for( int i = 0; i < count; i++) {
+            if( items[i].description.equals(description)) {
+                return items[i];
+            }
+        }
+        return null;
+    }
 
-		if( location == -1) {
-			throw new ItemNotFoundException("Item not located in unfinished items");
-		}
+    /**
+     * Removes the item from the unfinished and places it with the finished items.
+     *
+     * Also reports the completion to remote URL
+     * @param item
+     */
+    public void completeItem(ListItem item) throws ItemNotFoundException {
+        int location = findLocationInList(item);
+        removeFromUncompleted(location);
+        addToCompleted(item);
+        statisticsService.reportStatistics(item.description, item.getTotalMinutesUsed());
+    }
 
-		//Remove from unfinished
-		for( int i = location; i < unfinishedItemsCount; i++) {
-			unfinishedItems[i] = unfinishedItems[i+1];
-		}
-		unfinishedItemsCount--;
+    private int findLocationInList(ListItem item) throws ItemNotFoundException {
+        int location = -1;
+        for( int i = 0; i < unfinishedItemsCount; i++) {
+            if( unfinishedItems[i] == item) {
+                location = i;
+                break;
+            }
+        }
 
-		// Add to completed
-		completedItems[completedItemsCount] = item;
-		completedItemsCount++;
+        if( location == -1) {
+            throw new ItemNotFoundException("Item not located in unfinished items");
+        }
+        return location;
+    }
 
-		// Report statistics to url
-		statisticsService.reportStatistics(item.description, item.getTotalMinutesUsed());
-	}
+    private void removeFromUncompleted(int location) {
+        for( int i = location; i < unfinishedItemsCount; i++) {
+            unfinishedItems[i] = unfinishedItems[i+1];
+        }
+        unfinishedItemsCount--;
+    }
 
-	private ListItem findItemInList(String description, ListItem[] items, int count) {
-		for( int i = 0; i < count; i++) {
-			if( items[i].description.equals(description)) {
-				return items[i];
-			}
-		}
-		return null;
-	}
+    private void addToCompleted(ListItem item) {
+        completedItems[completedItemsCount] = item;
+        completedItemsCount++;
+    }
 
 	// unfinishedCount
 	// completedCount
@@ -104,11 +110,15 @@ public class Checklist {
 		String stringValue = "Checklist: " + name + "\n";
 		stringValue += "\tUnfinished items\n";
 		for(ListItem i : unfinishedItems) {
-			stringValue += "\t\t" + i.toString() +"\n";
+            if( i != null) {
+                stringValue += "\t\t" + i.toString() +"\n";
+            }
 		}
 		stringValue += "\tCompleted items\n";
 		for(ListItem i : completedItems) {
-			stringValue += "\t\t" + i.toString() +"\n";
+            if( i != null) {
+                stringValue += "\t\t" + i.toString() +"\n";
+            }
 		}
 		return stringValue;
 	}
